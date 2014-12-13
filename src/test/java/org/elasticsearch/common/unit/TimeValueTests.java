@@ -55,6 +55,22 @@ public class TimeValueTests extends ElasticsearchTestCase {
     }
 
     @Test
+    public void testParseTimeValue() {
+      TimeValue def = new TimeValue(0);
+      assertThat(def, equalTo(TimeValue.parseTimeValue(null, def)));
+      assertThat(new TimeValue(1), equalTo(TimeValue.parseTimeValue("1S", def)));
+      assertThat(new TimeValue(1), equalTo(TimeValue.parseTimeValue("1ms", def)));
+      assertThat(new TimeValue(1), equalTo(TimeValue.parseTimeValue("1", def)));
+
+      assertThat(new TimeValue((long)(1000)), equalTo(TimeValue.parseTimeValue("1s", def)));
+      assertThat(new TimeValue((long)(1000 * 60)), equalTo(TimeValue.parseTimeValue("1m", def)));
+      assertThat(new TimeValue((long)(1000 * 60 * 60)), equalTo(TimeValue.parseTimeValue("1h", def)));
+      assertThat(new TimeValue((long)(1000 * 60 * 60 * 24)), equalTo(TimeValue.parseTimeValue("1d", def)));
+      assertThat(new TimeValue((long)(1000 * 60 * 60 * 24 * 7)), equalTo(TimeValue.parseTimeValue("1w", def)));
+      assertThat(new TimeValue((long)(1000 * 60 * 60 * 24 * 365)), equalTo(TimeValue.parseTimeValue("1y", def)));
+    }
+
+    @Test
     public void testFormat() {
         assertThat(new TimeValue(1025, TimeUnit.MILLISECONDS).format(PeriodType.dayTime()), equalTo("1 second and 25 milliseconds"));
         assertThat(new TimeValue(1, TimeUnit.MINUTES).format(PeriodType.dayTime()), equalTo("1 minute"));
